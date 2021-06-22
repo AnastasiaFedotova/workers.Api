@@ -16,6 +16,10 @@ Worker.init(
     dateDeletion: {
       type: Sequelize.DATE,
       allowNull: true
+    },
+    status: {
+      type: Sequelize.STRING,
+      allowNull: true
     }
   },
   {
