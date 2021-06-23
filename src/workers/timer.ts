@@ -2,7 +2,7 @@
 import { getRandomSec } from '../utils/randomSecond';
 import { workerService } from './../service/workerService';
 
-const timer = async (workerId: number) => {
+const timer = async (workerId: number): Promise<void> => {
   const worker = await workerService.readById(workerId);
   const lifetime = worker.dateDeletion.getTime() - worker.dateСreation.getTime();
 
