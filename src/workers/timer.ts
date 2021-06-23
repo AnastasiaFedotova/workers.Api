@@ -1,9 +1,7 @@
-export {};
-import { parentPort, workerData } from 'worker_threads';
-import { workerService } from './../service/workerService';
-import { getRandomSec } from './../utils/randomSecond';
+import { workerService } from '../service/workerService';
+import { getRandomSec } from '../utils/randomSecond';
 
-const timer = async  (workerId: number) => {
+export default async  (workerId: number): Promise<void> => {
   const worker = await workerService.readById(workerId);
   const lifetime = worker.dateDeletion.getTime() - worker.dateСreation.getTime();
 
@@ -30,11 +28,4 @@ const timer = async  (workerId: number) => {
       console.log("count logs: " + countLogs)
     }
   }
-
-
-  return workerId + timeLogs
 }
-
-parentPort.postMessage(
-  timer(workerData.workerId)
-);
