@@ -5,12 +5,19 @@ import './db/workerShema';
 
 const app = express();
 const port = process.env.PORT || 3000;
+const whitelist = ['http://localhost:4200', 'https://localhost:4200', 'http://localhost:59797', 'https://localhost:59797' ];
 app.set("port", port);
 
 const http = require("http").Server(app);
-const io = require("socket.io")(http);
+const socketOptions = {
+  cors: {
+    origin: whitelist,
+    methods: ["GET", "POST"]
+  }
+}
 
-const whitelist = ['http://localhost:4200', 'https://localhost:4200', 'http://localhost:59797', 'https://localhost:59797' ];
+const io = require("socket.io")(http, socketOptions);
+app.set('socketio', io);
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -25,12 +32,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use('/api', v1Router)
+app.use('/api', v1Router);
 
 io.on("connection", function(_socket) {
   console.log("connected");
-});
+})
 
 http.listen(3000, function() {
   console.log("listening on *:3000");
-});
+})

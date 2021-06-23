@@ -1,9 +1,10 @@
 import { v4 } from 'uuid';
+import { Socket } from "socket.io";
 import WorkerInterface from '../interface/worker';
 import { getRandomSec } from './../utils/randomSecond';
 import createWorker from '../workers/createrWorkers';
 import { workerRepository } from './../repository/workerRepository';
-import { logsdb } from './../db/logs.memorydb';
+//import { logsdb } from './../db/logs.memorydb';
 
 function read(): Array<WorkerInterface> {
   try {
@@ -21,7 +22,7 @@ function readById(id: number): WorkerInterface {
   }
 }
 
-function add(): WorkerInterface {
+function add(io: Socket): WorkerInterface {
   try {
     const mlsec = 1000;
     const minsec = 5;
@@ -42,9 +43,14 @@ function add(): WorkerInterface {
 
     const worker = createWorker(newWorker.id, logstime, lifetime);
 
-    worker.on('message', (log) => {
-      logsdb.push(log)
-      console.log(log);
+    worker.on('message', (res) => {
+      if (res.event === 'log') {
+        console.log(res);
+      } else {
+        workerRepository.removeWorker(newWorker.id);
+      }
+
+      io.send(res)
     });
 
     return newWorker;
