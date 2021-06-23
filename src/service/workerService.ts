@@ -1,52 +1,61 @@
-import Worker from '../db/workerShema';
+import { v4 } from 'uuid';
 import WorkerInterface from '../interface/worker';
-import WorkerModel from './../models/worker';
 import { getRandomSec } from './../utils/randomSecond';
 import createWorker from '../workers/createrWorkers';
+import { workerRepository } from './../repository/workerRepository';
+import { logsdb } from './../db/logs.memorydb';
 
-async function read(): Promise<Array<WorkerModel>> {
+function read(): Array<WorkerInterface> {
   try {
-    return Worker.findAll({raw: true});
+    return workerRepository.readAllWorkers();
   } catch (err) {
     console.log(err)
   }
 }
 
-async function readById(id: number): Promise<WorkerModel> {
+function readById(id: number): WorkerInterface {
   try {
-    return Worker.findOne({where: {id: id}})
+    return workerRepository.readWorkerbyId(id)
   } catch (err) {
     console.log(err)
   }
 }
 
-async function add(): Promise<WorkerInterface> {
+function add(): WorkerInterface {
   try {
     const mlsec = 1000;
     const minsec = 5;
     const maxsec = 20;
     const lifetime = getRandomSec(minsec, maxsec) * mlsec;
+    const logstime = getRandomSec(0, minsec) * mlsec;
     const dateСreation = new Date();
     const dateDeletion = new Date(dateСreation.getTime() + lifetime);
 
     const newWorker = {
+      id: v4(),
       dateСreation: dateСreation,
       dateDeletion: dateDeletion,
       status: 'pending'
     }
 
-    const addedWorker = await Worker.create(newWorker, { raw: true });
-    createWorker(addedWorker.id);
+    workerRepository.addWorker(newWorker);
 
-    return addedWorker;
+    const worker = createWorker(newWorker.id, logstime, lifetime);
+
+    worker.on('message', (log) => {
+      logsdb.push(log)
+      console.log(log);
+    });
+
+    return newWorker;
   } catch (err) {
     console.log(err)
   }
 }
 
-async function remove(id: number): Promise<null> {
+function remove(id: number): null {
   try {
-    Worker.update({ status: 'completed' }, { where: { id: id } });
+    workerRepository.removeWorker(id);
     return null;
   } catch (err) {
     console.log(err)
