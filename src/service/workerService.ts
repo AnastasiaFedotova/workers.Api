@@ -1,7 +1,8 @@
 import Worker from '../db/workerShema';
 import WorkerInterface from '../interface/worker';
 import WorkerModel from './../models/worker';
-import randomSec from './../utils/randomSecond';
+import { getRandomSec } from './../utils/randomSecond';
+import createWorker from '../workers/createrWorkers';
 
 async function read(): Promise<Array<WorkerModel>> {
   try {
@@ -11,10 +12,20 @@ async function read(): Promise<Array<WorkerModel>> {
   }
 }
 
+async function readById(id: number): Promise<WorkerModel> {
+  try {
+    return Worker.findOne({where: {id: id}})
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 async function add(): Promise<WorkerInterface> {
   try {
     const mlsec = 1000;
-    const lifetime = randomSec() * mlsec;
+    const minsec = 5;
+    const maxsec = 20;
+    const lifetime = getRandomSec(minsec, maxsec) * mlsec;
     const dateСreation = new Date();
     const dateDeletion = new Date(dateСreation.getTime() + lifetime);
 
@@ -24,7 +35,10 @@ async function add(): Promise<WorkerInterface> {
       status: 'pending'
     }
 
-    return Worker.create(newWorker, { raw: true });
+    const addedWorker = await Worker.create(newWorker, { raw: true });
+    createWorker(addedWorker.id);
+
+    return addedWorker;
   } catch (err) {
     console.log(err)
   }
@@ -42,5 +56,6 @@ async function remove(id: number): Promise<null> {
 export const workerService = {
   add,
   read,
+  readById,
   remove
 };

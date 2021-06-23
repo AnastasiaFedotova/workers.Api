@@ -5,6 +5,10 @@ import './db/workerShema';
 
 const app = express();
 const port = process.env.PORT || 3000;
+app.set("port", port);
+
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
 
 const whitelist = ['http://localhost:4200', 'https://localhost:4200', 'http://localhost:59797', 'https://localhost:59797' ];
 
@@ -23,6 +27,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/api', v1Router)
 
-app.listen(port, () => {
-  console.log("server started on port");
+io.on("connection", function(_socket) {
+  console.log("connected");
+});
+
+http.listen(3000, function() {
+  console.log("listening on *:3000");
 });

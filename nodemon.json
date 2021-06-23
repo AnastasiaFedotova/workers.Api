@@ -7,7 +7,8 @@
   },
   "watch": ["src/"],
   "env": {
-    "NODE_ENV": "development"
+    "NODE_ENV": "development",
+    "NODE_OPTIONS": "--experimental-worker"
   },
   "ext": "js,json,ts,graphql"
 }
