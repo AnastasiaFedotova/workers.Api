@@ -1,7 +1,7 @@
 import WorkerInterface from '../interface/worker';
 import { workersdb } from '../db/workers.memorydb';
 
-const readAllWorkers = (): Array<WorkerInterface> => workersdb;
+const readAllWorkers = (): Array<WorkerInterface> => workersdb.filter(worker => worker.status === 'pending');
 
 const readWorkerbyId = (id: number): WorkerInterface => workersdb.find((worker) => worker.id === id);
 
