@@ -8,9 +8,8 @@ workersApi.get('/', async (_req, res) => {
   res.json(workersList);
 })
 
-workersApi.post('/', async (req, res) => {
-  const io = req.app.get('socketio');
-  const addedMorker = await workerService.add(io);
+workersApi.post('/', async (_req, res) => {
+  const addedMorker = await workerService.add();
   res.json(addedMorker);
 })
 

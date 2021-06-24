@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { Socket } from "socket.io";
+import io from './../app';
 import WorkerInterface from '../interface/worker';
 import { getRandomSec } from './../utils/randomSecond';
 import createWorker from '../workers/createrWorkers';
@@ -21,7 +21,7 @@ function readById(id: number): WorkerInterface {
   }
 }
 
-function add(io: Socket): WorkerInterface {
+function add(): WorkerInterface {
   try {
     const mlsec = 1000;
     const minsec = 5;
@@ -47,6 +47,8 @@ function add(io: Socket): WorkerInterface {
 
     worker.on('exit', () => {
       workerRepository.removeWorker(newWorker.id);
+
+      io.emit("workerDeath", newWorker.id);
     });
 
     return newWorker;
