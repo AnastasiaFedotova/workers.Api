@@ -1,37 +1,39 @@
 import { workerData, parentPort } from 'worker_threads';
+import { getRandomSec } from './../utils/randomSecond';
 
 const randomText = 'random text';
 
-const timer = (workerId: number, logstime: number, lifetime: number): void => {
+const Timer = (function() {
+  const mlsrc = 1000;
+  const logstime = getRandomSec(1, 5) * mlsrc;
   let countLogs = 0;
+  let IntervalLog;
 
-  const IntervalLog = setInterval(() => {
-    console.log('countlog: ' + countLogs)
-    countLogs += logstime;
+  function Timer(workerId: number, lifetime: number) {
+    IntervalLog = setInterval(() => {
+      countLogs += logstime;
 
-    const newLog = {
-      workerId: workerId,
-      logMessages: randomText
-    }
-
-    parentPort.postMessage({
-      event: 'log',
-      value: newLog
-    });
-
-    checkTimeLife();
-  }, logstime)
-
-  function checkTimeLife() {
-    if (countLogs > lifetime) {
-      clearInterval(IntervalLog);
+      const newLog = {
+        workerId: workerId,
+        logMessages: randomText
+      }
 
       parentPort.postMessage({
-        event: 'life',
-        value: false
+        event: 'log',
+        value: newLog
       });
+
+      checkTimeLife(lifetime);
+    }, logstime)
+  }
+
+  function checkTimeLife(time) {
+    if (countLogs > time) {
+      clearInterval(IntervalLog);
     }
   }
-}
 
-timer(workerData.workerId, workerData.logstime, workerData.lifetime);
+  return Timer;
+}());
+
+new Timer(workerData.workerId, workerData.lifetime);

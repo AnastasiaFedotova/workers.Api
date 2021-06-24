@@ -4,7 +4,6 @@ import WorkerInterface from '../interface/worker';
 import { getRandomSec } from './../utils/randomSecond';
 import createWorker from '../workers/createrWorkers';
 import { workerRepository } from './../repository/workerRepository';
-//import { logsdb } from './../db/logs.memorydb';
 
 function read(): Array<WorkerInterface> {
   try {
@@ -28,7 +27,6 @@ function add(io: Socket): WorkerInterface {
     const minsec = 5;
     const maxsec = 20;
     const lifetime = getRandomSec(minsec, maxsec) * mlsec;
-    const logstime = getRandomSec(0, minsec) * mlsec;
     const dateСreation = new Date();
     const dateDeletion = new Date(dateСreation.getTime() + lifetime);
 
@@ -41,7 +39,7 @@ function add(io: Socket): WorkerInterface {
 
     workerRepository.addWorker(newWorker);
 
-    const worker = createWorker(newWorker.id, logstime, lifetime);
+    const worker = createWorker(newWorker.id, lifetime);
 
     worker.on('message', (res) => {
       if (res.event === 'log') {
