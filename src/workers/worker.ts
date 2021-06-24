@@ -18,10 +18,7 @@ const Timer = (function() {
         logMessages: randomText
       }
 
-      parentPort.postMessage({
-        event: 'log',
-        value: newLog
-      });
+      parentPort.postMessage(newLog);
 
       checkTimeLife(lifetime);
     }, logstime)
@@ -30,6 +27,7 @@ const Timer = (function() {
   function checkTimeLife(time) {
     if (countLogs > time) {
       clearInterval(IntervalLog);
+      process.exit();
     }
   }
 

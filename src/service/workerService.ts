@@ -42,13 +42,11 @@ function add(io: Socket): WorkerInterface {
     const worker = createWorker(newWorker.id, lifetime);
 
     worker.on('message', (res) => {
-      if (res.event === 'log') {
-        console.log(res);
-      } else {
-        workerRepository.removeWorker(newWorker.id);
-      }
-
       io.send(res)
+    });
+
+    worker.on('exit', () => {
+      workerRepository.removeWorker(newWorker.id);
     });
 
     return newWorker;
