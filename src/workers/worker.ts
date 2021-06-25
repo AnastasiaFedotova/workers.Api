@@ -15,7 +15,7 @@ const Timer = (function() {
 
       const newLog = {
         workerId: workerId,
-        logMessages: randomText
+        logMessages: `${(new Date()).toISOString().split('T')[0]} ${randomText}`
       }
 
       parentPort.postMessage(newLog);
