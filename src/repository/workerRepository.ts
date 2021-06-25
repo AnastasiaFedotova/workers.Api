@@ -10,7 +10,7 @@ const addWorker = (worker: WorkerInterface): number => workersdb.push(worker);
 const removeWorker = (id: string): void => {
   const worker = readWorkerbyId(id);
   worker.status = 'completed';
-
+  worker.dateDeletion = new Date();
   return null;
 }
 
