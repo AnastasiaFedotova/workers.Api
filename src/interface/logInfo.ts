@@ -1,4 +1,4 @@
 export default interface LogInfo {
-  workerId: number;
+  workerId: string;
   logMessages: string;
 }

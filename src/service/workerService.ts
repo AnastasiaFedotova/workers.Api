@@ -13,7 +13,7 @@ function read(): Array<WorkerInterface> {
   }
 }
 
-function readById(id: number): WorkerInterface {
+function readById(id: string): WorkerInterface {
   try {
     return workerRepository.readWorkerbyId(id)
   } catch (err) {
@@ -57,7 +57,7 @@ function add(): WorkerInterface {
   }
 }
 
-function remove(id: number): null {
+function remove(id: string): null {
   try {
     workerRepository.removeWorker(id);
     return null;

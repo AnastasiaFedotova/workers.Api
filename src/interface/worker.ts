@@ -1,5 +1,5 @@
 export default interface WorkerInterface {
-  id?: number;
+  id?: string;
   dateСreation: Date;
   dateDeletion: Date;
   status: string;

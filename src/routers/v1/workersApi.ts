@@ -15,8 +15,8 @@ workersApi.post('/', async (_req, res) => {
 
 workersApi.put('/:id', async (req, res) => {
   const id = req.params.id;
-  workerService.remove(+id);
-  res.json('ok');
+  workerService.remove(id);
+  res.json(true);
 })
 
 export default workersApi;
