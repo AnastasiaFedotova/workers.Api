@@ -21,7 +21,7 @@ function readById(id: string): WorkerInterface {
   }
 }
 
-async function add(): Promise<WorkerInterface> {
+function add(): WorkerInterface {
   try {
     const mlsec = 1000;
     const minsec = 5;
@@ -39,7 +39,7 @@ async function add(): Promise<WorkerInterface> {
 
     workerRepository.addWorker(newWorker);
 
-    const worker = await createWorker(newWorker.id, lifetime);
+    const worker = createWorker(newWorker.id, lifetime);
 
     worker.on('message', (res) => {
       io.send(res)
