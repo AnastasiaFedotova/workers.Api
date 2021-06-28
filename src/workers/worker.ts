@@ -4,30 +4,34 @@ import { getRandomSec } from './../utils/randomSecond';
 const randomText = 'random text';
 
 class Timer {
-  mlsrc = 1000;
-  logstime = getRandomSec(1, 5) * this.mlsrc;
+  mlsec = 1000;
+  logstime = getRandomSec(1, 5) * this.mlsec;
   currentCountLogs = 0;
-  IntervalLog;
+  IntervalLog: NodeJS.Timeout;
 
-  constructor(workerId: number, lifetime: number) {
-    const destLog = lifetime / this.logstime;
+  constructor(public workerId: number, public lifetime: number) {
+    const destLog = lifetime / this.logstime - 1;
 
     this.IntervalLog = setInterval(() => {
-      const newLog = {
-        workerId: workerId,
-        logMessages: `${(new Date()).toISOString().split('T')[0]} ${randomText}`
-      }
+      this.getLog(destLog)
+    }, this.logstime);
 
-      parentPort.postMessage(newLog);
-
-      this.checkDestCountLog(destLog);
-      this.currentCountLogs++;
-    }, this.logstime)
+    this.getLog(destLog)
   }
 
+  getLog(destLog: number) {
+    const newLog = {
+      workerId: this.workerId,
+      logMessages: `${(new Date()).toISOString().split('T')[0]} ${randomText}`
+    }
 
+    parentPort.postMessage(newLog);
 
-  checkDestCountLog(destLog) {
+    this.checkDestCountLog(destLog);
+    this.currentCountLogs++;
+  }
+
+  checkDestCountLog(destLog: number) {
     if (this.currentCountLogs > destLog) {
       clearInterval(this.IntervalLog);
       process.exit();
