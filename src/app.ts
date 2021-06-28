@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import v1Router from './routers/v1/v1api';
-import './db/workerShema';
 
 const app = express();
 const port = process.env.PORT || 3000;
