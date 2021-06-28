@@ -6,13 +6,13 @@ const randomText = 'random text';
 const Timer = (function() {
   const mlsrc = 1000;
   const logstime = getRandomSec(1, 5) * mlsrc;
-  let countLogs = 0;
+  let currentCountLogs = 0;
   let IntervalLog;
 
   function Timer(workerId: number, lifetime: number) {
+    const destLog = lifetime / logstime;
+    console.log("workerId: " + workerId + " destLog: " + destLog, "logtime: " + logstime, "lifetime: " + lifetime)
     IntervalLog = setInterval(() => {
-      countLogs += logstime;
-
       const newLog = {
         workerId: workerId,
         logMessages: `${(new Date()).toISOString().split('T')[0]} ${randomText}`
@@ -20,12 +20,14 @@ const Timer = (function() {
 
       parentPort.postMessage(newLog);
 
-      checkTimeLife(lifetime);
+      checkDestCountLog(destLog);
+      currentCountLogs++;
     }, logstime)
   }
 
-  function checkTimeLife(time) {
-    if (countLogs > time) {
+  function checkDestCountLog(destLog) {
+    console.log("currentCountLogs: " + currentCountLogs, "destLog: " + destLog)
+    if (currentCountLogs > destLog) {
       clearInterval(IntervalLog);
       process.exit();
     }
