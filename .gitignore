@@ -2,3 +2,4 @@ node_modules
 dist
 configs/dbconfig.ts
 utils
+src/workers/worker.js
