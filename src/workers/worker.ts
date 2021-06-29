@@ -1,6 +1,5 @@
 import { workerData, parentPort } from 'worker_threads';
 import { getRandomSec } from './../utils/randomSecond';
-
 const randomText = 'random text';
 
 class Timer {
@@ -9,14 +8,15 @@ class Timer {
   currentCountLogs = 0;
   IntervalLog: NodeJS.Timeout;
 
-  constructor(public workerId: number, public lifetime: number) {
-    const destLog = lifetime / this.logstime - 1;
+  constructor(public workerId: string, public lifetime: number) {
+    const destLog = lifetime / this.logstime;
 
     this.IntervalLog = setInterval(() => {
       this.getLog(destLog)
     }, this.logstime);
 
-    this.getLog(destLog)
+    this.getLog(destLog);
+    this.currentCountLogs++;
   }
 
   getLog(destLog: number) {
@@ -31,10 +31,14 @@ class Timer {
     this.currentCountLogs++;
   }
 
+  stopWorker() {
+    clearInterval(this.IntervalLog);
+    process.exit();
+  }
+
   checkDestCountLog(destLog: number) {
     if (this.currentCountLogs > destLog) {
-      clearInterval(this.IntervalLog);
-      process.exit();
+      this.stopWorker();
     }
   }
 }

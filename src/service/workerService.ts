@@ -5,6 +5,8 @@ import { getRandomSec } from './../utils/randomSecond';
 import createWorker from '../workers/createrWorkers';
 import { workerRepository } from './../repository/workerRepository';
 
+const workersMap = new Map();
+
 function read(): Array<WorkerInterface> {
   try {
     return workerRepository.readAllWorkers();
@@ -42,7 +44,7 @@ function add(): WorkerInterface {
     const worker = createWorker(newWorker.id, lifetime);
 
     worker.on('message', (res) => {
-      io.send(res)
+      io.send(res);
     });
 
     worker.on('exit', () => {
@@ -50,6 +52,8 @@ function add(): WorkerInterface {
 
       io.emit("workerDeath", newWorker.id);
     });
+
+    workersMap.set(newWorker.id, worker);
 
     return newWorker;
   } catch (err) {
@@ -59,6 +63,9 @@ function add(): WorkerInterface {
 
 function remove(id: string): null {
   try {
+    workersMap.get(id).terminate();
+    workersMap.delete(id);
+
     workerRepository.removeWorker(id);
     return null;
   } catch (err) {
